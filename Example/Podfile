@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'NTextView', :exclusive => true do
+  pod "NTextView", :path => "../"
+end
+
+target 'Tests', :exclusive => true do
+  pod "NTextView", :path => "../"
+
+  pod 'Specta'
+  pod 'Expecta'
+end
