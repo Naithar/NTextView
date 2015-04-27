@@ -8,6 +8,13 @@
 
 #import "NHTextView.h"
 
+#define ifNSNull(x, y) \
+([x isKindOfClass:[NSNull class]]) ? y : (x ?: y)
+
+NSString *const kNHTextViewLinkAttributesSetting = @"NHTextViewLinkAttributes";
+NSString *const kNHTextViewHashtagAttributesSetting = @"NHTextViewHashtagAttributes";
+NSString *const kNHTextViewMentionAttributesSetting = @"NHTextViewMentionAttributes";
+
 NSString *const kNHTextViewHashtagPattern = @"(#\\w+)";
 NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
@@ -60,6 +67,29 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     return self;
 }
 
++ (NSMutableDictionary*)defaultSettings
+{
+    static dispatch_once_t token;
+    __strong static NSMutableDictionary* settings = nil;
+    dispatch_once(&token, ^{
+        settings = [@{
+                      kNHTextViewLinkAttributesSetting : @{
+                              NSForegroundColorAttributeName : [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1],
+                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+                              },
+                      kNHTextViewHashtagAttributesSetting : @{
+                              NSForegroundColorAttributeName : [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1],
+                              },
+                      kNHTextViewMentionAttributesSetting : @{
+                              NSForegroundColorAttributeName : [UIColor colorWithRed:1 green:0.25 blue:0 alpha:1],
+                              NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
+                              }
+                      } mutableCopy];
+    });
+
+    return settings;
+}
+
 - (void)commonInit {
     self.layoutManager.allowsNonContiguousLayout = NO;
 
@@ -94,17 +124,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                    [strongSelf textChanged];
                                }];
 
-    self.linkAttributes = @{
-                            NSForegroundColorAttributeName : [UIColor blueColor]
-                            };
-
-    self.hashtagAttributes = @{
-                            NSForegroundColorAttributeName : [UIColor redColor]
-                            };
-
-    self.mentionAttributes = @{
-                            NSForegroundColorAttributeName : [UIColor greenColor]
-                            };
+    _linkAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewLinkAttributesSetting], nil);
+    _hashtagAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewHashtagAttributesSetting], nil);
+    _mentionAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewMentionAttributesSetting], nil);
 }
 
 - (void)textChanged {
@@ -182,7 +204,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                              BOOL *stop) {
                                     NSRange linkRange = [result rangeAtIndex:0];
 
-                                    [string addAttributes:attributes ?: self.linkAttributes
+                                    [string addAttributes:attributes ?: @{}
                                                     range:linkRange];
                                 }];
 }
@@ -210,7 +232,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                               BOOL *stop) {
                                      NSRange hashtagRange = [result rangeAtIndex:0];
 
-                                     [string addAttributes:attributes ?: self.hashtagAttributes
+                                     [string addAttributes:attributes ?: @{}
                                                      range:hashtagRange];
                                  }];
 }
@@ -236,7 +258,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                               BOOL *stop) {
                                      NSRange mentionRange = [result rangeAtIndex:0];
 
-                                     [string addAttributes:attributes ?: self.mentionAttributes
+                                     [string addAttributes:attributes ?: @{}
                                                      range:mentionRange];
                                  }];
 }
