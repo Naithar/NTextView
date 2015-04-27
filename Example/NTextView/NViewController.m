@@ -20,7 +20,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 
-    NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 50, 300, 33)];
+    NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 50, 300, 50)];
     textView.backgroundColor = [UIColor lightGrayColor];
     textView.font = [UIFont systemFontOfSize:12];
     textView.placeholder = @"Placeholder";

@@ -8,7 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol NHTextViewDelegate <NSObject>
+
+//@optional
+
+@end
+
 @interface NHTextView : UITextView
+
+@property (nonatomic, weak) id<NHTextViewDelegate> nhTextViewDelegate;
 
 @property (nonatomic, assign) BOOL findLinks;
 @property (nonatomic, assign) BOOL findHashtags;

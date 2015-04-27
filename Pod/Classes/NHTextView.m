@@ -235,8 +235,10 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         return;
     }
 
+    CGFloat newHeight = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
+
     CGRect currentBounds = self.frame;
-    currentBounds.size.height = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
+    currentBounds.size.height = newHeight;
     self.frame = currentBounds;
     self.contentOffset = CGPointZero;
 }
