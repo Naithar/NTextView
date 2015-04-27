@@ -24,6 +24,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 @property (nonatomic, strong) id textChangeObserver;
 @property (nonatomic, strong) UIColor *textViewColor;
 
+@property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 @end
 
 @implementation NHTextView
@@ -101,12 +102,16 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 - (void)commonInit {
     self.layoutManager.allowsNonContiguousLayout = NO;
     self.spellCheckingType = UITextSpellCheckingTypeNo;
+    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-    self.findLinks = NO;
-    self.findMentions = NO;
-    self.findHashtags = NO;
-    self.isGrowingTextView = NO;
-    self.numberOfLines = -1;
+    _findLinks = NO;
+    _findMentions = NO;
+    _findHashtags = NO;
+    _isGrowingTextView = NO;
+    _useHeightConstraint = NO;
+    _numberOfLines = -1;
+
+    self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:0 constant:40];
 
     UIEdgeInsets inset = self.contentInset;
     if ([super respondsToSelector:@selector(textContainerInset)]) {
@@ -237,9 +242,18 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     CGFloat newHeight = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
 
-    CGRect currentBounds = self.frame;
-    currentBounds.size.height = newHeight;
-    self.frame = currentBounds;
+//    if (self.useHeightConstraint) {
+//
+//    }
+//    else {
+        self.heightConstraint.constant = newHeight;
+        CGRect currentBounds = self.frame;
+        currentBounds.size.height = newHeight;
+        self.frame = currentBounds;
+//    }
+//    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    
     self.contentOffset = CGPointZero;
 }
 
@@ -266,9 +280,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         inset = self.textContainerInset;
     }
 
-//    CGRect frame = self.placeholderLabel.frame;
-//    frame.origin.y = inset.top + (isGrowingTextView ? 2.5 : 0);
-//    self.placeholderLabel.frame = frame;
     [self checkForGrowing];
 
     [self setNeedsLayout];
@@ -354,6 +365,19 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                      [string addAttributes:attributes ?: @{}
                                                      range:mentionRange];
                                  }];
+}
+
+
+
+- (void)setUseHeightConstraint:(BOOL)useHeightConstraint {
+    [self willChangeValueForKey:@"useHeightConstraint"];
+    _useHeightConstraint = useHeightConstraint;
+    [self removeConstraint:self.heightConstraint];
+
+    if (useHeightConstraint) {
+        [self addConstraint:self.heightConstraint];
+    }
+    [self didChangeValueForKey:@"useHeightConstraint"];
 }
 
 - (void)setText:(NSString *)text {

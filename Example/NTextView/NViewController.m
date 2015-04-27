@@ -10,6 +10,7 @@
 #import <NHTextView.h>
 
 @interface NViewController ()
+@property (strong, nonatomic) IBOutlet NHTextView *nhTextView;
 
 @end
 
@@ -19,7 +20,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-
+//
     NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 50, 300, 50)];
     textView.backgroundColor = [UIColor lightGrayColor];
     textView.font = [UIFont systemFontOfSize:12];
@@ -29,6 +30,17 @@
     textView.findMentions = YES;
     textView.isGrowingTextView = YES;
     textView.numberOfLines = 3;
+
+    self.nhTextView.backgroundColor = [UIColor lightGrayColor];
+    self.nhTextView.font = [UIFont systemFontOfSize:12];
+    self.nhTextView.placeholder = @"Placeholder";
+    self.nhTextView.findLinks = YES;
+    self.nhTextView.findHashtags = YES;
+    self.nhTextView.findMentions = YES;
+    self.nhTextView.isGrowingTextView = YES;
+    self.nhTextView.numberOfLines = 3;
+    self.nhTextView.useHeightConstraint = YES;
+    
     [self.view addSubview:textView];
 }
 

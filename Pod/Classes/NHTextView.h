@@ -18,6 +18,8 @@
 
 @property (nonatomic, weak) id<NHTextViewDelegate> nhTextViewDelegate;
 
+@property (nonatomic, assign) BOOL useHeightConstraint;
+
 @property (nonatomic, assign) BOOL findLinks;
 @property (nonatomic, assign) BOOL findHashtags;
 @property (nonatomic, assign) BOOL findMentions;
