@@ -235,9 +235,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         return;
     }
 
-    CGRect currentBounds = self.frame;
-    currentBounds.size.height = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight + 3, currentHeight) + inset.top + inset.bottom);
-    self.frame = currentBounds;
+    CGRect currentBounds = self.bounds;
+    currentBounds.size.height = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight + 3, currentHeight) + inset.top);
+    self.bounds = currentBounds;
 }
 
 - (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
@@ -378,3 +378,84 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 @end
+
+
+//RACObserve($0, "bounds").subscribeNext { [weak weakTextView = $0, weak weakSelf = self] data in
+//    if weakSelf?.textViewHeight?.constant < weakSelf?.maxTextViewHeight {
+//        weakTextView?.contentOffset.y = 0
+//    }
+//    return
+//}
+//
+//RACObserve($0, "text").distinctUntilChanged().subscribeNext { [weak weakTextView = $0, weak weakSelf = self] data in
+//
+//    let range = weakTextView?.selectedRange
+//
+//    weakTextView?.font = weakSelf?.font ?? weakSelf?.defaultTextViewFont
+//    weakTextView?.textColor = weakSelf?.editedTextColor ?? weakSelf?.defaultTextColor
+//
+//    if let text = data as? String {
+//        weakSelf?.didChangeText?(weakSelf, weakTextView, text)
+//        weakSelf?.recalculateTextViewHeight(weakTextView, text: text)
+//    }
+//
+//    if let textRange = range {
+//        weakTextView?.selectedRange = textRange
+//    }
+//    return
+//    }
+//
+//    $0.rac_textSignal()/*.distinctUntilChanged()*/.subscribeNext { [weak weakTextView = $0, weak weakSelf = self] data in
+//        if let text = data as? String {
+//            let range = weakTextView?.selectedRange
+//
+//            weakTextView?.text = text
+//
+//            if let textRange = range {
+//                weakTextView?.selectedRange = textRange
+//            }
+//
+//            if let attributed = weakTextView?.attributedText {
+//                var mutableAttributed = NSMutableAttributedString(attributedString: attributed)
+//
+//                mutableAttributed.removeAttribute(NSLinkAttributeName, range: NSRange(0..<mutableAttributed.length))
+//
+//                weakTextView?.attributedText = mutableAttributed
+//            }
+//
+//
+//        }
+//        return
+//    }
+
+
+//func recalculateTextViewHeight(textView: UITextView?, text: String!) {
+//    var textHeight = text.utf16Count > 0
+//    ? STBHelper.getStringRectFromAttributedText(textView?.attributedText, andMaxWidth: (textView?.bounds.width ?? self.textViewWidthOffset) - self.textViewWidthOffset).height
+//    : STBHelper.getStringRectFromText(text,
+//                                      andFont: textView?.font ?? defaultTextViewFont,
+//                                      andMaxWidth: (textView?.bounds.width ?? self.textViewWidthOffset) - self.textViewWidthOffset,
+//                                      andLineBreakMode: NSLineBreakMode.ByWordWrapping).height
+//
+//    let height = CGFloat(ceil(textHeight)) + self.textViewHeightOffset
+//
+//    let maxHeight = self.maxTextViewHeight
+//
+//    textView?.contentSize.height = height
+//
+//    if height <= maxHeight {
+//        self.textViewHeight?.constant = CGFloat(height)
+//    }
+//    else {
+//        self.textViewHeight?.constant = CGFloat(maxHeight)
+//    }
+//
+//    UIView.animateWithDuration(
+//                               0.15,
+//                               delay: 0,
+//                               options: UIViewAnimationOptions.BeginFromCurrentState | UIViewAnimationOptions.CurveLinear,
+//                               animations: { [weak weakSelf = self] in
+//                                   weakSelf?.parentView?.setNeedsUpdateConstraints()
+//                                   weakSelf?.parentView?.layoutIfNeeded()
+//                               }, completion: nil)
+//}

@@ -29,7 +29,6 @@
     textView.findMentions = YES;
     textView.isGrowingTextView = YES;
     textView.numberOfLines = 3;
-    
     [self.view addSubview:textView];
 }
 
