@@ -8,11 +8,15 @@
 
 #import "NHTextView.h"
 
+NSString *const kNHTextViewHashtagPattern = @"(#\\w+)";
+NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
+
 @interface NHTextView ()
 
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) id textChangeObserver;
 
+@property (nonatomic, strong) UIColor *textViewColor;
 
 @end
 
@@ -89,11 +93,152 @@
                                    __strong __typeof(weakSelf) strongSelf = weakSelf;
                                    [strongSelf textChanged];
                                }];
+
+    self.linkAttributes = @{
+                            NSForegroundColorAttributeName : [UIColor blueColor]
+                            };
+
+    self.hashtagAttributes = @{
+                            NSForegroundColorAttributeName : [UIColor redColor]
+                            };
+
+    self.mentionAttributes = @{
+                            NSForegroundColorAttributeName : [UIColor greenColor]
+                            };
 }
 
 - (void)textChanged {
     self.placeholderLabel.hidden = (self.text != nil
                                     && [self.text length] > 0);
+
+    [self findLinksHashtagsAndMentions];
+}
+
+- (void)findLinksHashtagsAndMentions {
+    if (!self.findLinks
+        && !self.findHashtags
+        && !self.findMentions) {
+        return;
+    }
+
+    static NSString *previousText = nil;
+
+    if ([self.text isEqualToString:previousText]) {
+        return;
+    }
+
+    NSRange selectedRange = self.selectedRange;
+
+    NSMutableAttributedString *tempAttributedString;
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = self.textAlignment;
+
+    tempAttributedString = [[NSMutableAttributedString alloc]
+                            initWithString:self.text ?: @""
+                            attributes:@{
+                                         NSFontAttributeName : self.font ?: [UIFont systemFontOfSize:12],
+                                         NSForegroundColorAttributeName : self.textColor ?: [UIColor blackColor],
+                                         NSParagraphStyleAttributeName : paragraphStyle
+                                         }];
+    if (self.findLinks) {
+        [self findLinksInAttributedString:tempAttributedString
+                           withAttributes:self.linkAttributes];
+    }
+
+    if (self.findHashtags) {
+        [self findHashtagsInAttributedString:tempAttributedString
+                              withAttributes:self.hashtagAttributes];
+    }
+
+    if (self.findMentions) {
+        [self findMentionsInAttributedString:tempAttributedString
+                              withAttributes:self.mentionAttributes];
+    }
+
+    self.attributedText = tempAttributedString;
+    self.selectedRange = selectedRange;
+    previousText = self.text;
+
+}
+
+- (void)findLinksInAttributedString:(NSMutableAttributedString*)string
+                     withAttributes:(NSDictionary*)attributes {
+    if (!string) {
+        return;
+    }
+
+    NSRange textRange = NSMakeRange(0, [string length]);
+
+    NSDataDetector *dataDetector = [NSDataDetector
+                                    dataDetectorWithTypes:NSTextCheckingTypeLink
+                                    error:nil];
+
+    [dataDetector enumerateMatchesInString:[string string]
+                                   options:0
+                                     range:textRange
+                                usingBlock:^(NSTextCheckingResult *result,
+                                             NSMatchingFlags flags,
+                                             BOOL *stop) {
+                                    NSRange linkRange = [result rangeAtIndex:0];
+
+                                    [string addAttributes:attributes ?: self.linkAttributes
+                                                    range:linkRange];
+                                }];
+}
+
+- (void)findHashtagsInAttributedString:(NSMutableAttributedString*)string
+                        withAttributes:(NSDictionary*)attributes {
+    if (!string) {
+        return;
+    }
+
+    NSRange textRange = NSMakeRange(0, [string length]);
+
+    NSRegularExpression *hashtagRegExp = [NSRegularExpression
+                                          regularExpressionWithPattern:kNHTextViewHashtagPattern
+                                          options:0
+                                          error:nil];
+
+
+
+    [hashtagRegExp enumerateMatchesInString:[string string]
+                                    options:0
+                                      range:textRange
+                                 usingBlock:^(NSTextCheckingResult *result,
+                                              NSMatchingFlags flags,
+                                              BOOL *stop) {
+                                     NSRange hashtagRange = [result rangeAtIndex:0];
+
+                                     [string addAttributes:attributes ?: self.hashtagAttributes
+                                                     range:hashtagRange];
+                                 }];
+}
+
+- (void)findMentionsInAttributedString:(NSMutableAttributedString*)string
+                        withAttributes:(NSDictionary*)attributes {
+    if (!string) {
+        return;
+    }
+
+    NSRange textRange = NSMakeRange(0, [string length]);
+
+    NSRegularExpression *mentionRegExp = [NSRegularExpression
+                                          regularExpressionWithPattern:kNHTextViewMentionPattern
+                                          options:0
+                                          error:nil];
+
+    [mentionRegExp enumerateMatchesInString:[string string]
+                                    options:0
+                                      range:textRange
+                                 usingBlock:^(NSTextCheckingResult *result,
+                                              NSMatchingFlags flags,
+                                              BOOL *stop) {
+                                     NSRange mentionRange = [result rangeAtIndex:0];
+
+                                     [string addAttributes:attributes ?: self.mentionAttributes
+                                                     range:mentionRange];
+                                 }];
 }
 
 - (void)setText:(NSString *)text {
@@ -105,6 +250,15 @@
     [super setFont:font];
     self.placeholderLabel.font = font;
     [self.placeholderLabel sizeToFit];
+}
+
+- (void)setTextColor:(UIColor *)textColor {
+    [super setTextColor:textColor];
+    self.textViewColor = textColor;
+}
+
+- (UIColor *)textColor {
+    return self.textViewColor;
 }
 
 - (void)setPlaceholder:(NSString *)placeholder {
