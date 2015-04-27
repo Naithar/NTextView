@@ -10,6 +10,8 @@
 
 @interface NHTextView : UITextView
 
-@property (nonatomic, readonly, strong) UILabel *placeholderLabel;
+@property (nonatomic, copy) NSString *placeholder;
+@property (nonatomic, strong) UIFont *placeholderFont;
+@property (nonatomic, strong) UIColor *placeholderColor;
 
 @end

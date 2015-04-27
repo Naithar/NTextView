@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) id textChangeObserver;
 
+
 @end
 
 @implementation NHTextView
@@ -58,18 +59,79 @@
 - (void)commonInit {
     self.layoutManager.allowsNonContiguousLayout = NO;
 
-    //create label
-    //UIColor(red: 0, green: 0, blue: 0.098, alpha: 0.22)
-    //textChangeObserver = UITextViewTextDidChangeNotification
+    UIEdgeInsets inset = self.contentInset;
+    if ([super respondsToSelector:@selector(textContainerInset)]) {
+        inset = self.textContainerInset;
+    }
+
+    self.placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(inset.left + 4.5,
+                                                                      inset.top,
+                                                                      self.bounds.size.width - inset.left - inset.right,
+                                                                      0)];
+    self.placeholderLabel.backgroundColor = [UIColor clearColor];
+    self.placeholderLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.placeholderLabel.numberOfLines = 1;
+    self.placeholderLabel.font = self.font ?: [UIFont systemFontOfSize:12];
+    self.placeholderLabel.textColor = [UIColor colorWithRed:0 green:0 blue:0.098 alpha:0.22];
+    self.placeholderLabel.text = self.placeholder;
+
+    [self addSubview:self.placeholderLabel];
+    [self sendSubviewToBack:self.placeholderLabel];
+
+    self.placeholderLabel.hidden = (self.text != nil
+                                    && [self.text length] > 0);
+
+    __weak __typeof(self) weakSelf = self;
+    self.textChangeObserver = [[NSNotificationCenter defaultCenter]
+                               addObserverForName:UITextViewTextDidChangeNotification
+                               object:nil
+                               queue:nil usingBlock:^(NSNotification *note) {
+                                   __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                   [strongSelf textChanged];
+                               }];
 }
 
+- (void)textChanged {
+    self.placeholderLabel.hidden = (self.text != nil
+                                    && [self.text length] > 0);
+}
 
 - (void)setText:(NSString *)text {
     [super setText:text];
+    [self textChanged];
 }
 
 - (void)setFont:(UIFont *)font {
     [super setFont:font];
+    self.placeholderLabel.font = font;
+    [self.placeholderLabel sizeToFit];
+}
+
+- (void)setPlaceholder:(NSString *)placeholder {
+    [self willChangeValueForKey:@"placeholder"];
+    self.placeholderLabel.text = placeholder;
+    [self.placeholderLabel sizeToFit];
+    [self sendSubviewToBack:self.placeholderLabel];
+    [self didChangeValueForKey:@"placeholder"];
+}
+
+- (void)setPlaceholderFont:(UIFont *)placeholderFont {
+    [self willChangeValueForKey:@"placeholderFont"];
+    self.placeholderLabel.font = placeholderFont ?: self.font ?: [UIFont systemFontOfSize:12];
+    [self.placeholderLabel sizeToFit];
+    [self sendSubviewToBack:self.placeholderLabel];
+    [self didChangeValueForKey:@"placeholderFont"];
+}
+
+- (void)setPlaceholderColor:(UIColor *)placeholderColor {
+    [self willChangeValueForKey:@"placeholderColor"];
+    self.placeholderLabel.textColor = placeholderColor ?: [UIColor colorWithRed:0
+                                                                          green:0
+                                                                           blue:0.098
+                                                                          alpha:0.22];;
+    [self.placeholderLabel sizeToFit];
+    [self sendSubviewToBack:self.placeholderLabel];
+    [self didChangeValueForKey:@"placeholderColor"];
 }
 
 - (void)dealloc {
@@ -77,85 +139,3 @@
 }
 
 @end
-
-
-//public class PlaceholderTextView: UITextView {
-//
-//    override public var font: UIFont! {
-//        didSet {
-//            self.placeholderLabel?.font = self.font
-//        }
-//    }
-//
-//    override public dynamic var text: String! {
-//        didSet {
-//            self.textChanged(nil)
-//            //            NSNotificationCenter.defaultCenter().postNotificationName(UITextViewTextDidChangeNotification, object: nil);
-//        }
-//    }
-//    //    override public var textColor: UIColor! {
-//    //        didSet {
-//    //            self.placeholderLabel?.textColor = self.textColor != nil ? self.textColor.colorWithAlphaComponent(0.35)
-//    //                : UIColor(white: 0.85, alpha: 1)
-//    //        }
-//    //    }
-//    var placeholderLabel : UILabel!
-//
-//    required public init(coder aDecoder: NSCoder) {
-//        super.init(coder: aDecoder)
-//
-//        self.createLabel()
-//    }
-//
-//    override init(frame: CGRect, textContainer: NSTextContainer?) {
-//        super.init(frame: frame, textContainer: textContainer)
-//
-//        self.createLabel()
-//    }
-//
-//    override init(frame: CGRect) {
-//        super.init(frame: frame)
-//        self.createLabel()
-//    }
-//
-//    func createLabel() {
-//        if self.placeholderLabel != nil {
-//            return
-//        }
-//
-//        self.placeholderLabel = UILabel(frame: CGRectZero)
-//        //R:0 G:0 B:0.098 A:0.22
-//        self.placeholderLabel.textColor = UIColor(red: 0, green: 0, blue: 0.098, alpha: 0.22)
-//        self.placeholderLabel.numberOfLines = 1
-//        self.placeholderLabel.lineBreakMode = NSLineBreakMode.ByTruncatingTail
-//        self.placeholderLabel.backgroundColor = UIColor.clearColor()
-//        if self.font != nil {
-//            self.placeholderLabel.font = self.font
-//        }
-//        self.addSubview(self.placeholderLabel)
-//
-//        layout(self.placeholderLabel) { view in
-//            view.left == view.superview!.left + 5
-//            view.right == view.superview!.right - 5
-//            view.top == view.superview!.top + 7.5
-//        }
-//
-//        self.placeholderLabel.textAlignment = NSTextAlignment.Left
-//        self.placeholderLabel.hidden = self.text != nil && self.text.utf16Count > 0
-//
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "textChanged:", name: UITextViewTextDidChangeNotification, object: self)
-//    }
-//
-//    func textChanged(notification: NSNotification!) {
-//        if self.text != nil && self.text.utf16Count > 0 {
-//            self.placeholderLabel?.hidden = true
-//        }
-//        else {
-//            self.placeholderLabel?.hidden = false
-//        }
-//    }
-//    deinit {
-//        NSNotificationCenter.defaultCenter().removeObserver(self)
-//    }
-//    
-//}
