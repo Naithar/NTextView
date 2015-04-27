@@ -20,11 +20,15 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 
-    NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 50, 300, 100)];
+    NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 50, 300, 10)];
+    textView.backgroundColor = [UIColor lightGrayColor];
+    textView.font = [UIFont systemFontOfSize:12];
     textView.placeholder = @"Placeholder";
     textView.findLinks = YES;
     textView.findHashtags = YES;
     textView.findMentions = YES;
+    textView.isGrowingTextView = YES;
+    textView.numberOfLines = 3;
     
     [self.view addSubview:textView];
 }

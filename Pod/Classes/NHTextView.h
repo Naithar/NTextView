@@ -13,6 +13,8 @@
 @property (nonatomic, assign) BOOL findLinks;
 @property (nonatomic, assign) BOOL findHashtags;
 @property (nonatomic, assign) BOOL findMentions;
+@property (nonatomic, assign) BOOL isGrowingTextView;
+@property (nonatomic, assign) NSInteger numberOfLines;
 
 @property (nonatomic, copy) NSDictionary *linkAttributes;
 @property (nonatomic, copy) NSDictionary *hashtagAttributes;

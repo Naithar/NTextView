@@ -22,7 +22,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) id textChangeObserver;
-
 @property (nonatomic, strong) UIColor *textViewColor;
 
 @end
@@ -103,6 +102,12 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     self.layoutManager.allowsNonContiguousLayout = NO;
     self.spellCheckingType = UITextSpellCheckingTypeNo;
 
+    self.findLinks = NO;
+    self.findMentions = NO;
+    self.findHashtags = NO;
+    self.isGrowingTextView = NO;
+    self.numberOfLines = -1;
+
     UIEdgeInsets inset = self.contentInset;
     if ([super respondsToSelector:@selector(textContainerInset)]) {
         inset = self.textContainerInset;
@@ -142,6 +147,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     _linkAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewLinkAttributesSetting], nil);
     _hashtagAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewHashtagAttributesSetting], nil);
     _mentionAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewMentionAttributesSetting], nil);
+
+    [self checkForGrowing];
 }
 
 - (void)textChanged {
@@ -169,7 +176,10 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     NSMutableAttributedString *tempAttributedString;
 
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = self.textAlignment;
+    paragraphStyle.minimumLineHeight = self.font.lineHeight + 3;
+    paragraphStyle.maximumLineHeight = self.font.lineHeight + 3;
 
     tempAttributedString = [[NSMutableAttributedString alloc]
                             initWithString:self.text ?: @""
@@ -194,9 +204,47 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     }
 
     self.attributedText = tempAttributedString;
+
+
+    [self checkForGrowing];
+
     self.selectedRange = selectedRange;
     previousText = self.text;
+}
 
+- (void)checkForGrowing {
+    if (!self.isGrowingTextView) {
+        return;
+    }
+
+    UIEdgeInsets inset = self.contentInset;
+    if ([super respondsToSelector:@selector(textContainerInset)]) {
+        inset = self.textContainerInset;
+    }
+
+    CGFloat currentWidth = self.bounds.size.width - inset.left - inset.right;
+    CGFloat currentHeight = round([self.attributedText
+                             boundingRectWithSize:CGSizeMake(currentWidth, CGFLOAT_MAX)
+                             options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                             context:nil].size.height);
+
+    NSInteger currentNumberOfLines = round(currentHeight / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight + 3));
+
+    if (currentNumberOfLines > self.numberOfLines
+        && self.numberOfLines != -1) {
+        return;
+    }
+
+    CGRect currentBounds = self.frame;
+    currentBounds.size.height = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight + 3, currentHeight) + inset.top + inset.bottom);
+    self.frame = currentBounds;
+}
+
+- (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
+    [self willChangeValueForKey:@"isGrowingTextView"];
+    _isGrowingTextView = isGrowingTextView;
+    [self checkForGrowing];
+    [self didChangeValueForKey:@"isGrowingTextView"];
 }
 
 - (void)findLinksInAttributedString:(NSMutableAttributedString*)string
