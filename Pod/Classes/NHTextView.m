@@ -178,8 +178,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = self.textAlignment;
-    paragraphStyle.minimumLineHeight = self.font.lineHeight + 3;
-    paragraphStyle.maximumLineHeight = self.font.lineHeight + 3;
+//    paragraphStyle.minimumLineHeight = self.font.lineHeight + 3;
+//    paragraphStyle.maximumLineHeight = self.font.lineHeight + 3;
 
     tempAttributedString = [[NSMutableAttributedString alloc]
                             initWithString:self.text ?: @""
@@ -228,22 +228,50 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                              options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
                              context:nil].size.height);
 
-    NSInteger currentNumberOfLines = round(currentHeight / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight + 3));
+    NSInteger currentNumberOfLines = round(currentHeight / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
 
     if (currentNumberOfLines > self.numberOfLines
         && self.numberOfLines != -1) {
         return;
     }
 
-    CGRect currentBounds = self.bounds;
-    currentBounds.size.height = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight + 3, currentHeight) + inset.top);
-    self.bounds = currentBounds;
+    CGRect currentBounds = self.frame;
+    currentBounds.size.height = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
+    self.frame = currentBounds;
+    self.contentOffset = CGPointZero;
+}
+
+- (void)setBounds:(CGRect)bounds {
+    [super setBounds:bounds];
+
+    UIEdgeInsets inset = self.contentInset;
+    if ([super respondsToSelector:@selector(textContainerInset)]) {
+        inset = self.textContainerInset;
+    }
+
+    NSInteger currentNumberOfLines = round((self.contentSize.height - inset.top - inset.bottom) / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
+    if (currentNumberOfLines <= self.numberOfLines) {
+        self.contentOffset = CGPointZero;
+    }
 }
 
 - (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
     [self willChangeValueForKey:@"isGrowingTextView"];
     _isGrowingTextView = isGrowingTextView;
+
+    UIEdgeInsets inset = self.contentInset;
+    if ([super respondsToSelector:@selector(textContainerInset)]) {
+        inset = self.textContainerInset;
+    }
+
+//    CGRect frame = self.placeholderLabel.frame;
+//    frame.origin.y = inset.top + (isGrowingTextView ? 2.5 : 0);
+//    self.placeholderLabel.frame = frame;
     [self checkForGrowing];
+
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+
     [self didChangeValueForKey:@"isGrowingTextView"];
 }
 
