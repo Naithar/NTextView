@@ -74,14 +74,23 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     dispatch_once(&token, ^{
         settings = [@{
                       kNHTextViewLinkAttributesSetting : @{
-                              NSForegroundColorAttributeName : [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1],
+                              NSForegroundColorAttributeName : [UIColor colorWithRed:0
+                                                                               green:0.5
+                                                                                blue:1
+                                                                               alpha:1],
                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
                               },
                       kNHTextViewHashtagAttributesSetting : @{
-                              NSForegroundColorAttributeName : [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1],
+                              NSForegroundColorAttributeName : [UIColor colorWithRed:0
+                                                                               green:0.5
+                                                                                blue:1
+                                                                               alpha:1],
                               },
                       kNHTextViewMentionAttributesSetting : @{
-                              NSForegroundColorAttributeName : [UIColor colorWithRed:1 green:0.25 blue:0 alpha:1],
+                              NSForegroundColorAttributeName : [UIColor colorWithRed:1
+                                                                               green:0.25
+                                                                                blue:0
+                                                                               alpha:1],
                               NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
                               }
                       } mutableCopy];
@@ -92,6 +101,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
 - (void)commonInit {
     self.layoutManager.allowsNonContiguousLayout = NO;
+    self.spellCheckingType = UITextSpellCheckingTypeNo;
 
     UIEdgeInsets inset = self.contentInset;
     if ([super respondsToSelector:@selector(textContainerInset)]) {
@@ -100,13 +110,18 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     self.placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(inset.left + 4.5,
                                                                       inset.top,
-                                                                      self.bounds.size.width - inset.left - inset.right,
+                                                                      (self.bounds.size.width
+                                                                       - inset.left
+                                                                       - inset.right),
                                                                       0)];
     self.placeholderLabel.backgroundColor = [UIColor clearColor];
     self.placeholderLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.placeholderLabel.numberOfLines = 1;
     self.placeholderLabel.font = self.font ?: [UIFont systemFontOfSize:12];
-    self.placeholderLabel.textColor = [UIColor colorWithRed:0 green:0 blue:0.098 alpha:0.22];
+    self.placeholderLabel.textColor = [UIColor colorWithRed:0
+                                                      green:0
+                                                       blue:0.098
+                                                      alpha:0.22];
     self.placeholderLabel.text = self.placeholder;
 
     [self addSubview:self.placeholderLabel];

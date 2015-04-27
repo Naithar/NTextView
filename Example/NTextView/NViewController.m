@@ -23,6 +23,8 @@
     NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 50, 300, 100)];
     textView.placeholder = @"Placeholder";
     textView.findLinks = YES;
+    textView.findHashtags = YES;
+    textView.findMentions = YES;
     
     [self.view addSubview:textView];
 }

@@ -22,6 +22,4 @@
 @property (nonatomic, strong) UIFont *placeholderFont;
 @property (nonatomic, strong) UIColor *placeholderColor;
 
-
-
 @end
