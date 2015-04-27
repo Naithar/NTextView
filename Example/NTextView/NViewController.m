@@ -7,6 +7,7 @@
 //
 
 #import "NViewController.h"
+#import <NHTextView.h>
 
 @interface NViewController ()
 
@@ -18,6 +19,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+
+    NHTextView *textView = [[NHTextView alloc] initWithFrame:CGRectMake(0, 0, 300, 100)];
 }
 
 - (void)didReceiveMemoryWarning

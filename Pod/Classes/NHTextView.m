@@ -6,9 +6,75 @@
 //
 //
 
-#import "NTextView.h"
+#import "NHTextView.h"
 
-@implementation NTextView
+@interface NHTextView ()
+
+@property (nonatomic, strong) UILabel *placeholderLabel;
+@property (nonatomic, strong) id textChangeObserver;
+
+@end
+
+@implementation NHTextView
+
+- (instancetype)init {
+    self = [super init];
+
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+                textContainer:(NSTextContainer *)textContainer {
+    self = [super initWithFrame:frame
+                  textContainer:textContainer];
+
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (void)commonInit {
+    self.layoutManager.allowsNonContiguousLayout = NO;
+
+    //create label
+    //UIColor(red: 0, green: 0, blue: 0.098, alpha: 0.22)
+    //textChangeObserver = UITextViewTextDidChangeNotification
+}
+
+
+- (void)setText:(NSString *)text {
+    [super setText:text];
+}
+
+- (void)setFont:(UIFont *)font {
+    [super setFont:font];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.textChangeObserver];
+}
 
 @end
 

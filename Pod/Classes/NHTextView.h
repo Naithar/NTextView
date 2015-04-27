@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NTextView : NSObject
+@interface NHTextView : UITextView
+
+@property (nonatomic, readonly, strong) UILabel *placeholderLabel;
 
 @end

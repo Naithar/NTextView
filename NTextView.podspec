@@ -10,19 +10,16 @@
 Pod::Spec.new do |s|
   s.name             = "NTextView"
   s.version          = "0.1.0"
-  s.summary          = "A short description of NTextView."
+  s.summary          = "Custom text view"
   s.description      = <<-DESC
-                       An optional longer description of NTextView
-
-                       * Markdown format.
-                       * Don't worry about the indent, we strip it!
+                       Custom text view with placeholder.
                        DESC
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/NTextView"
+  s.homepage         = "https://github.com/naithar/NTextView"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "Naithar" => "devias.naith@gmail.com" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/NTextView.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => "https://github.com/naithar/NTextView.git", :tag => s.version.to_s }
+  # s.social_media_url = 'https://twitter.com/naithar'
 
   s.platform     = :ios, '7.0'
   s.requires_arc = true
@@ -32,7 +29,5 @@ Pod::Spec.new do |s|
     'NTextView' => ['Pod/Assets/*.png']
   }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.public_header_files = 'Pod/Classes/**/*.h'
 end
