@@ -14,6 +14,7 @@
 
 @optional
 - (void)textView:(NHTextView*)textView didChangeHeight:(CGFloat)height;
+- (BOOL)textViewShouldStopOnMaxLength:(NHTextView*)textView;
 
 @end
 
@@ -36,5 +37,8 @@
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, strong) UIFont *placeholderFont;
 @property (nonatomic, strong) UIColor *placeholderColor;
+
+@property (nonatomic, assign) NSUInteger maxLenght;
+@property (nonatomic, assign) BOOL gotMaxLength;
 
 @end

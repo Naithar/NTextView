@@ -110,6 +110,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     _isGrowingTextView = NO;
     _useHeightConstraint = NO;
     _numberOfLines = -1;
+    _maxLenght = -1;
+    _gotMaxLength = NO;
 
     self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:0 constant:40];
 
@@ -147,6 +149,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                object:nil
                                queue:nil usingBlock:^(NSNotification *note) {
                                    __strong __typeof(weakSelf) strongSelf = weakSelf;
+
+
                                    [strongSelf textChanged];
                                }];
 
@@ -171,10 +175,20 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         return;
     }
 
-    static NSString *previousText = nil;
+    if (self.maxLenght != -1
+        && [self.text length] > self.maxLenght) {
+        __weak __typeof(self) weakSelf = self;
+        if ([weakSelf.nhTextViewDelegate respondsToSelector:@selector(textViewShouldStopOnMaxLength:)]) {
+            if ([weakSelf.nhTextViewDelegate textViewShouldStopOnMaxLength:weakSelf]) {
+                self.text = [self.text substringToIndex:self.maxLenght];
+                return;
+            }
+        }
 
-    if ([self.text isEqualToString:previousText]) {
-        return;
+        self.gotMaxLength = YES;
+    }
+    else {
+        self.gotMaxLength = NO;
     }
 
     NSRange selectedRange = self.selectedRange;
@@ -184,8 +198,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = self.textAlignment;
-    //    paragraphStyle.minimumLineHeight = self.font.lineHeight + 3;
-    //    paragraphStyle.maximumLineHeight = self.font.lineHeight + 3;
 
     tempAttributedString = [[NSMutableAttributedString alloc]
                             initWithString:self.text ?: @""
@@ -215,7 +227,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [self checkForGrowingAnimated:YES];
 
     self.selectedRange = selectedRange;
-    previousText = self.text;
 }
 
 - (void)checkForGrowing {
@@ -424,6 +435,14 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 - (void)setTextColor:(UIColor *)textColor {
     [super setTextColor:textColor];
     self.textViewColor = textColor;
+}
+
+- (void)setGotMaxLength:(BOOL)gotMaxLength {
+    if (self.gotMaxLength != gotMaxLength) {
+        [self willChangeValueForKey:@"gotMaxLenght"];
+        _gotMaxLength = gotMaxLength;
+        [self didChangeValueForKey:@"gotMaxLength"];
+    }
 }
 
 - (UIColor *)textColor {
