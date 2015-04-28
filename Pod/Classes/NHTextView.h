@@ -15,6 +15,8 @@
 @optional
 - (void)textView:(NHTextView*)textView didChangeHeight:(CGFloat)height;
 - (BOOL)textViewShouldStopOnMaxLength:(NHTextView*)textView;
+- (void)textView:(NHTextView *)textView didChangeText:(NSString*)text;
+- (void)textView:(NHTextView *)textView didChangeAttributedText:(NSAttributedString*)attributed;
 
 @end
 

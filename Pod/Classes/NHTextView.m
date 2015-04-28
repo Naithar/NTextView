@@ -146,11 +146,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     __weak __typeof(self) weakSelf = self;
     self.textChangeObserver = [[NSNotificationCenter defaultCenter]
                                addObserverForName:UITextViewTextDidChangeNotification
-                               object:nil
+                               object:self
                                queue:nil usingBlock:^(NSNotification *note) {
                                    __strong __typeof(weakSelf) strongSelf = weakSelf;
-
-
                                    [strongSelf textChanged];
                                }];
 
@@ -166,6 +164,15 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                     && [self.text length] > 0);
 
     [self findLinksHashtagsAndMentions];
+
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhTextViewDelegate respondsToSelector:@selector(textView:didChangeText:)]) {
+        [weakSelf.nhTextViewDelegate textView:weakSelf didChangeText:self.text];
+    }
+
+    if ([weakSelf.nhTextViewDelegate respondsToSelector:@selector(textView:didChangeAttributedText:)]) {
+        [weakSelf.nhTextViewDelegate textView:weakSelf didChangeAttributedText:self.attributedText];
+    }
 }
 
 - (void)findLinksHashtagsAndMentions {
