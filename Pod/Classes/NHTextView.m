@@ -438,11 +438,11 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 - (void)setGotMaxLength:(BOOL)gotMaxLength {
-    if (self.gotMaxLength != gotMaxLength) {
+//    if (self.gotMaxLength != gotMaxLength) {
         [self willChangeValueForKey:@"gotMaxLenght"];
         _gotMaxLength = gotMaxLength;
         [self didChangeValueForKey:@"gotMaxLength"];
-    }
+//    }
 }
 
 - (UIColor *)textColor {
