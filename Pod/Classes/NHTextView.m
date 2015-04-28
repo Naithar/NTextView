@@ -212,13 +212,17 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     self.attributedText = tempAttributedString;
 
 
-    [self checkForGrowing];
+    [self checkForGrowingAnimated:YES];
 
     self.selectedRange = selectedRange;
     previousText = self.text;
 }
 
 - (void)checkForGrowing {
+    [self checkForGrowingAnimated:NO];
+}
+
+- (void)checkForGrowingAnimated:(BOOL)animated {
     if (!self.isGrowingTextView) {
         return;
     }
@@ -243,19 +247,20 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     CGFloat newHeight = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
 
-    //    if (self.useHeightConstraint) {
-    //
-    //    }
-    //    else {
-    self.heightConstraint.constant = newHeight;
-    CGRect currentBounds = self.frame;
-    currentBounds.size.height = newHeight;
-    self.frame = currentBounds;
-    //    }
-    //    [self setNeedsLayout];
-    [self layoutIfNeeded];
+    [UIView animateWithDuration: animated ? 0.2 : 0 animations:^{
+        self.heightConstraint.constant = newHeight;
+        CGRect currentBounds = self.frame;
+        currentBounds.size.height = newHeight;
+        self.frame = currentBounds;
+        [self layoutIfNeeded];
+    }];
 
     self.contentOffset = CGPointZero;
+
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhTextViewDelegate respondsToSelector:@selector(textView:didChangeHeight:)]) {
+        [weakSelf.nhTextViewDelegate textView:weakSelf didChangeHeight:newHeight];
+    }
 }
 
 - (void)setBounds:(CGRect)bounds {
@@ -275,11 +280,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 - (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
     [self willChangeValueForKey:@"isGrowingTextView"];
     _isGrowingTextView = isGrowingTextView;
-
-    UIEdgeInsets inset = self.contentInset;
-    if ([super respondsToSelector:@selector(textContainerInset)]) {
-        inset = self.textContainerInset;
-    }
 
     [self checkForGrowing];
 
@@ -458,6 +458,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 - (void)dealloc {
+    self.nhTextViewDelegate = nil;
+    self.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self.textChangeObserver];
 }
 

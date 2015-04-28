@@ -8,9 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class NHTextView;
+
 @protocol NHTextViewDelegate <NSObject>
 
-//@optional
+@optional
+- (void)textView:(NHTextView*)textView didChangeHeight:(CGFloat)height;
 
 @end
 
