@@ -134,6 +134,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                                       alpha:0.22];
     self.placeholderLabel.text = self.placeholder;
 
+    [self.placeholderLabel sizeToFit];
     [self addSubview:self.placeholderLabel];
     [self sendSubviewToBack:self.placeholderLabel];
 
@@ -183,8 +184,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = self.textAlignment;
-//    paragraphStyle.minimumLineHeight = self.font.lineHeight + 3;
-//    paragraphStyle.maximumLineHeight = self.font.lineHeight + 3;
+    //    paragraphStyle.minimumLineHeight = self.font.lineHeight + 3;
+    //    paragraphStyle.maximumLineHeight = self.font.lineHeight + 3;
 
     tempAttributedString = [[NSMutableAttributedString alloc]
                             initWithString:self.text ?: @""
@@ -229,9 +230,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     CGFloat currentWidth = self.bounds.size.width - inset.left - inset.right;
     CGFloat currentHeight = round([self.attributedText
-                             boundingRectWithSize:CGSizeMake(currentWidth, CGFLOAT_MAX)
-                             options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
-                             context:nil].size.height);
+                                   boundingRectWithSize:CGSizeMake(currentWidth, CGFLOAT_MAX)
+                                   options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                                   context:nil].size.height);
 
     NSInteger currentNumberOfLines = round(currentHeight / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
 
@@ -242,18 +243,18 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     CGFloat newHeight = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
 
-//    if (self.useHeightConstraint) {
-//
-//    }
-//    else {
-        self.heightConstraint.constant = newHeight;
-        CGRect currentBounds = self.frame;
-        currentBounds.size.height = newHeight;
-        self.frame = currentBounds;
-//    }
-//    [self setNeedsLayout];
+    //    if (self.useHeightConstraint) {
+    //
+    //    }
+    //    else {
+    self.heightConstraint.constant = newHeight;
+    CGRect currentBounds = self.frame;
+    currentBounds.size.height = newHeight;
+    self.frame = currentBounds;
+    //    }
+    //    [self setNeedsLayout];
     [self layoutIfNeeded];
-    
+
     self.contentOffset = CGPointZero;
 }
 
@@ -367,7 +368,36 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                  }];
 }
 
+- (void)setContentInset:(UIEdgeInsets)contentInset {
+    [super setContentInset:contentInset];
 
+    if (![super respondsToSelector:@selector(textContainerInset)]) {
+        self.placeholderLabel.frame = CGRectMake(contentInset.left + 4.5,
+                                                 contentInset.top,
+                                                 (self.bounds.size.width
+                                                  - contentInset.left
+                                                  - contentInset.right),
+                                                 0);
+        [self.placeholderLabel sizeToFit];
+        [self sendSubviewToBack:self.placeholderLabel];
+    }
+}
+
+- (void)setTextContainerInset:(UIEdgeInsets)textContainerInset {
+    if ([super respondsToSelector:@selector(textContainerInset)]) {
+        [super setTextContainerInset:textContainerInset];
+
+        self.placeholderLabel.frame = CGRectMake(textContainerInset.left + 4.5,
+                                                 textContainerInset.top,
+                                                 (self.bounds.size.width
+                                                  - textContainerInset.left
+                                                  - textContainerInset.right),
+                                                 0);
+        [self.placeholderLabel sizeToFit];
+        [self sendSubviewToBack:self.placeholderLabel];
+    }
+
+}
 
 - (void)setUseHeightConstraint:(BOOL)useHeightConstraint {
     [self willChangeValueForKey:@"useHeightConstraint"];
