@@ -160,10 +160,17 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 - (void)textChanged {
+
+    NSRange selectedRange = self.selectedRange;
+
     self.placeholderLabel.hidden = (self.text != nil
                                     && [self.text length] > 0);
 
     [self findLinksHashtagsAndMentions];
+
+    [self checkForGrowingAnimated:YES];
+
+    self.selectedRange = selectedRange;
 
     __weak __typeof(self) weakSelf = self;
     if ([weakSelf.nhTextViewDelegate respondsToSelector:@selector(textView:didChangeText:)]) {
@@ -198,8 +205,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         self.gotMaxLength = NO;
     }
 
-    NSRange selectedRange = self.selectedRange;
-
     NSMutableAttributedString *tempAttributedString;
 
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -229,11 +234,6 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     }
 
     self.attributedText = tempAttributedString;
-
-
-    [self checkForGrowingAnimated:YES];
-
-    self.selectedRange = selectedRange;
 }
 
 - (void)checkForGrowing {
@@ -270,7 +270,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         CGRect currentBounds = self.frame;
         currentBounds.size.height = newHeight;
         self.frame = currentBounds;
-        [self layoutIfNeeded];
+        [self.superview layoutIfNeeded];
     }];
 
     self.contentOffset = CGPointZero;
