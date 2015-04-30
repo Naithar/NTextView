@@ -23,6 +23,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) id textChangeObserver;
 @property (nonatomic, strong) UIColor *textViewColor;
+@property (nonatomic, strong) UIFont *textViewFont;
 
 @property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 @end
@@ -438,24 +439,31 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 - (void)setFont:(UIFont *)font {
-    [super setFont:font];
+    [self willChangeValueForKey:@"font"];
+    self.textViewFont = font;
     self.placeholderLabel.font = font;
     [self.placeholderLabel sizeToFit];
+    [self didChangeValueForKey:@"font"];
+}
+
+- (UIFont *)font {
+    return self.textViewFont ?: [UIFont systemFontOfSize:12];
 }
 
 - (void)setTextColor:(UIColor *)textColor {
-    [super setTextColor:textColor];
+    [self willChangeValueForKey:@"textColor"];
     self.textViewColor = textColor;
+    [self didChangeValueForKey:@"textColor"];
+}
+
+- (UIColor *)textColor {
+    return self.textViewColor ?: [UIColor blackColor];
 }
 
 - (void)setGotMaxLength:(BOOL)gotMaxLength {
     [self willChangeValueForKey:@"gotMaxLenght"];
     _gotMaxLength = gotMaxLength;
     [self didChangeValueForKey:@"gotMaxLength"];
-}
-
-- (UIColor *)textColor {
-    return self.textViewColor;
 }
 
 - (void)setPlaceholder:(NSString *)placeholder {
