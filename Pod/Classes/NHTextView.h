@@ -32,6 +32,8 @@
 @property (nonatomic, assign) BOOL isGrowingTextView;
 @property (nonatomic, assign) NSInteger numberOfLines;
 
+@property (nonatomic, assign) CGRect caretRect;
+
 @property (nonatomic, copy) NSDictionary *linkAttributes;
 @property (nonatomic, copy) NSDictionary *hashtagAttributes;
 @property (nonatomic, copy) NSDictionary *mentionAttributes;

@@ -105,6 +105,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     self.spellCheckingType = UITextSpellCheckingTypeNo;
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
+    _caretRect = CGRectNull;
     _findLinks = NO;
     _findMentions = NO;
     _findHashtags = NO;
@@ -491,6 +492,14 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [self.placeholderLabel sizeToFit];
     [self sendSubviewToBack:self.placeholderLabel];
     [self didChangeValueForKey:@"placeholderColor"];
+}
+
+- (CGRect)caretRectForPosition:(UITextPosition *)position {
+    if (CGRectIsNull(self.caretRect)) {
+        [super caretRectForPosition:position];
+    }
+
+    return self.caretRect;
 }
 
 - (void)dealloc {
