@@ -102,10 +102,12 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
 - (void)commonInit {
     self.layoutManager.allowsNonContiguousLayout = NO;
-    self.spellCheckingType = UITextSpellCheckingTypeNo;
+    self.spellCheckingType = UITextSpellCheckingTypeYes;
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     _caretRect = CGRectNull;
+    _caretSize = CGSizeMake(-1, -1);
+    _caretOffset = CGPointZero;
     _findLinks = NO;
     _findMentions = NO;
     _findHashtags = NO;
@@ -496,7 +498,20 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position {
     if (CGRectIsNull(self.caretRect)) {
-        [super caretRectForPosition:position];
+        CGRect resultCaretRect = [super caretRectForPosition:position];
+
+        if (self.caretSize.width != -1) {
+            resultCaretRect.size.width = self.caretSize.width;
+        }
+
+        if (self.caretSize.height != -1) {
+            resultCaretRect.size.height = self.caretSize.height;
+        }
+
+        resultCaretRect.origin.x += self.caretOffset.x;
+        resultCaretRect.origin.y += self.caretOffset.y;
+
+        return resultCaretRect;
     }
 
     return self.caretRect;

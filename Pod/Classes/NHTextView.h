@@ -33,6 +33,8 @@
 @property (nonatomic, assign) NSInteger numberOfLines;
 
 @property (nonatomic, assign) CGRect caretRect;
+@property (nonatomic, assign) CGSize caretSize;
+@property (nonatomic, assign) CGPoint caretOffset;
 
 @property (nonatomic, copy) NSDictionary *linkAttributes;
 @property (nonatomic, copy) NSDictionary *hashtagAttributes;

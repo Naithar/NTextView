@@ -30,6 +30,8 @@
     textView.findMentions = YES;
     textView.isGrowingTextView = YES;
     textView.numberOfLines = 3;
+//    textView.caretSize = CGSizeMake(5, 1);
+//    textView.caretOffset = CGPointMake(10, 14);
 
     self.nhTextView.backgroundColor = [UIColor lightGrayColor];
     self.nhTextView.font = [UIFont systemFontOfSize:12];
@@ -40,7 +42,9 @@
     self.nhTextView.isGrowingTextView = YES;
     self.nhTextView.numberOfLines = 3;
     self.nhTextView.useHeightConstraint = YES;
-    
+    self.nhTextView.caretSize = CGSizeMake(5, 1);
+    self.nhTextView.caretOffset = CGPointMake(10, 14);
+
     [self.view addSubview:textView];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
