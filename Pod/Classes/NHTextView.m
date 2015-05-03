@@ -321,10 +321,26 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 - (void)setContentSize:(CGSize)contentSize {
     [super setContentSize:contentSize];
 
+}
 
-//    if ([self shouldAddHeight]) {
-//        self.contentOffset = CGPointMake(self.contentOffset.x, self.contentSize.height - ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
-//    }
+- (void)setContentOffset:(CGPoint)contentOffset {
+    if (CGPointEqualToPoint(contentOffset, self.contentOffset)) {
+
+        UIEdgeInsets inset = self.contentInset;
+        if ([super respondsToSelector:@selector(textContainerInset)]) {
+            inset = self.textContainerInset;
+        }
+
+        NSInteger currentNumberOfLines = round((self.contentSize.height - inset.top - inset.bottom) / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
+        if (currentNumberOfLines > self.numberOfLines
+            && [self shouldAddHeight]) {
+            CGPoint newOffset = CGPointMake(self.contentOffset.x, (currentNumberOfLines - self.numberOfLines) * ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
+            self.contentOffset = newOffset;
+        }
+
+        return;
+    }
+    [super setContentOffset:contentOffset];
 }
 
 - (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
