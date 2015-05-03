@@ -349,8 +349,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     [self checkForGrowing];
 
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
+    [self.superview setNeedsLayout];
+    [self.superview layoutIfNeeded];
 
     [self didChangeValueForKey:@"isGrowingTextView"];
 }
