@@ -11,6 +11,9 @@
 #define ifNSNull(x, y) \
 ([x isKindOfClass:[NSNull class]]) ? y : (x ?: y)
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v) \
+([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 NSString *const kNHTextViewLinkAttributesSetting = @"NHTextViewLinkAttributes";
 NSString *const kNHTextViewHashtagAttributesSetting = @"NHTextViewHashtagAttributes";
 NSString *const kNHTextViewMentionAttributesSetting = @"NHTextViewMentionAttributes";
@@ -244,6 +247,18 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [self checkForGrowingAnimated:NO];
 }
 
+- (BOOL)shouldAddHeight {
+    NSInteger stringLength = [[self.attributedText string] length];
+    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")
+        && stringLength > 0) {
+        if ([[[self.attributedText string] substringFromIndex:stringLength - 1] isEqualToString:@"\n"]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
 - (void)checkForGrowingAnimated:(BOOL)animated {
     if (!self.isGrowingTextView) {
         return;
@@ -259,6 +274,10 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                    boundingRectWithSize:CGSizeMake(currentWidth, CGFLOAT_MAX)
                                    options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
                                    context:nil].size.height);
+
+    if ([self shouldAddHeight]) {
+        currentHeight += ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight);
+    }
 
     NSInteger currentNumberOfLines = round(currentHeight / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
 
@@ -297,6 +316,15 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     if (currentNumberOfLines <= self.numberOfLines) {
         self.contentOffset = CGPointZero;
     }
+}
+
+- (void)setContentSize:(CGSize)contentSize {
+    [super setContentSize:contentSize];
+
+
+//    if ([self shouldAddHeight]) {
+//        self.contentOffset = CGPointMake(self.contentOffset.x, self.contentSize.height - ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
+//    }
 }
 
 - (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
