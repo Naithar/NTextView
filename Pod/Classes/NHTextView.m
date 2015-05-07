@@ -269,7 +269,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         inset = self.textContainerInset;
     }
 
-    CGFloat currentWidth = self.bounds.size.width - inset.left - inset.right;
+    CGFloat currentWidth = self.bounds.size.width - inset.left - inset.right - 10;
     CGFloat currentHeight = round([self.attributedText
                                    boundingRectWithSize:CGSizeMake(currentWidth, CGFLOAT_MAX)
                                    options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
