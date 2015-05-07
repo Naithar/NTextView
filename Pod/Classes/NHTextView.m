@@ -486,11 +486,10 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 - (void)setFont:(UIFont *)font {
-    [self willChangeValueForKey:@"font"];
     self.textViewFont = font;
     self.placeholderLabel.font = font;
     [self.placeholderLabel sizeToFit];
-    [self didChangeValueForKey:@"font"];
+    [super setFont:font];
 }
 
 - (UIFont *)font {
