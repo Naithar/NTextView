@@ -103,6 +103,10 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     return settings;
 }
 
+- (CGSize)intrinsicContentSize {
+    return CGSizeMake(UIViewNoIntrinsicMetric, self.heightConstraint.constant);
+}
+
 - (void)commonInit {
     self.layoutManager.allowsNonContiguousLayout = NO;
     self.spellCheckingType = UITextSpellCheckingTypeYes;
@@ -293,6 +297,11 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         CGRect currentBounds = self.frame;
         currentBounds.size.height = newHeight;
         self.frame = currentBounds;
+
+        if (!self.useHeightConstraint) {
+            [self invalidateIntrinsicContentSize];
+        }
+
         [self.superview layoutIfNeeded];
     }];
 
@@ -550,13 +559,13 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         if (self.caretSize.height != -1) {
             resultCaretRect.size.height = self.caretSize.height;
         }
-
+        
         resultCaretRect.origin.x += self.caretOffset.x;
         resultCaretRect.origin.y += self.caretOffset.y;
-
+        
         return resultCaretRect;
     }
-
+    
     return self.caretRect;
 }
 
