@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString *const kNHTextViewLinkAttributesSetting;
+extern NSString *const kNHTextViewHashtagAttributesSetting;
+extern NSString *const kNHTextViewMentionAttributesSetting;
+
 @class NHTextView;
 
 @protocol NHTextViewDelegate <NSObject>
@@ -46,5 +50,7 @@
 
 @property (nonatomic, assign) NSUInteger maxLenght;
 @property (nonatomic, assign) BOOL gotMaxLength;
+
++ (NSMutableDictionary*)defaultSettings;
 
 @end
