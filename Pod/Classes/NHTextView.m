@@ -336,9 +336,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [super setContentSize:contentSize];
 
     if (previousSize.width != self.contentSize.width) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             [self checkForGrowingAnimated:YES];
-        });
+//        });
     }
 }
 
