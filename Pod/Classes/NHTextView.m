@@ -313,6 +313,10 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     }
 }
 
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+}
+
 - (void)setBounds:(CGRect)bounds {
     [super setBounds:bounds];
 
@@ -328,8 +332,14 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 }
 
 - (void)setContentSize:(CGSize)contentSize {
+    CGSize previousSize = self.contentSize;
     [super setContentSize:contentSize];
 
+    if (previousSize.width != self.contentSize.width) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self checkForGrowingAnimated:YES];
+        });
+    }
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset {
