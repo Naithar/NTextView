@@ -284,13 +284,18 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     }
 
     NSInteger currentNumberOfLines = round(currentHeight / ((self.font ?: [UIFont systemFontOfSize:12]).lineHeight));
+    CGFloat maxHeight = round(self.numberOfLines * (self.font ?: [UIFont systemFontOfSize:12]).lineHeight) + inset.top + inset.bottom;
 
     if (currentNumberOfLines > self.numberOfLines
+        && self.heightConstraint.constant == maxHeight
         && self.numberOfLines != -1) {
         return;
     }
 
-    CGFloat newHeight = round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight, currentHeight) + inset.top + inset.bottom);
+    CGFloat newHeight = MIN(maxHeight,
+                            round(MAX((self.font ?: [UIFont systemFontOfSize:12]).lineHeight,
+                                      currentHeight)
+                                  + inset.top + inset.bottom));
 
     [UIView animateWithDuration: animated ? 0.2 : 0 animations:^{
         self.heightConstraint.constant = newHeight;
@@ -329,6 +334,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     if (currentNumberOfLines <= self.numberOfLines) {
         self.contentOffset = CGPointZero;
     }
+
 }
 
 - (void)setContentSize:(CGSize)contentSize {
@@ -336,9 +342,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [super setContentSize:contentSize];
 
     if (previousSize.width != self.contentSize.width) {
-//        dispatch_async(dispatch_get_main_queue(), ^{
-            [self checkForGrowingAnimated:YES];
-//        });
+        [self checkForGrowingAnimated:YES];
     }
 }
 
@@ -359,7 +363,8 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
         return;
     }
-    [super setContentOffset:contentOffset];
+
+    [super setContentOffset:contentOffset];;
 }
 
 - (void)setIsGrowingTextView:(BOOL)isGrowingTextView {
