@@ -301,9 +301,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
                                   + inset.top + inset.bottom));
 
     [UIView animateWithDuration: animated ? 0.2 : 0 animations:^{
-        self.heightConstraint.constant = newHeight;
+        self.heightConstraint.constant = MAX(0, newHeight);
         CGRect currentBounds = self.frame;
-        currentBounds.size.height = newHeight;
+        currentBounds.size.height = MAX(0, newHeight);
         self.frame = currentBounds;
 
         if (!self.useHeightConstraint) {
