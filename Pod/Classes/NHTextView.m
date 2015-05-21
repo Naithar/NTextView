@@ -17,6 +17,9 @@
 NSString *const kNHTextViewLinkAttributesSetting = @"NHTextViewLinkAttributes";
 NSString *const kNHTextViewHashtagAttributesSetting = @"NHTextViewHashtagAttributes";
 NSString *const kNHTextViewMentionAttributesSetting = @"NHTextViewMentionAttributes";
+const CGFloat kNHTextViewDefaultCaretSize = -1;
+const NSInteger kNHTextViewDefaultTextLength = -1;
+const NSInteger kNHTextViewDefaultNumberOfLines = -1;
 
 NSString *const kNHTextViewHashtagPattern = @"(#\\w+)";
 NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
@@ -113,15 +116,15 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     _caretRect = CGRectNull;
-    _caretSize = CGSizeMake(-1, -1);
+    _caretSize = CGSizeMake(kNHTextViewDefaultCaretSize, kNHTextViewDefaultCaretSize);
     _caretOffset = CGPointZero;
     _findLinks = NO;
     _findMentions = NO;
     _findHashtags = NO;
     _isGrowingTextView = NO;
     _useHeightConstraint = NO;
-    _numberOfLines = -1;
-    _maxLenght = -1;
+    _numberOfLines = kNHTextViewDefaultNumberOfLines;
+    _maxLenght = kNHTextViewDefaultTextLength;
     _gotMaxLength = NO;
 
     self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:0 constant:40];
@@ -200,7 +203,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
         return;
     }
 
-    if (self.maxLenght != -1
+    if (self.maxLenght != kNHTextViewDefaultTextLength
         && [self.text length] > self.maxLenght) {
         __weak __typeof(self) weakSelf = self;
         if ([weakSelf.nhTextViewDelegate respondsToSelector:@selector(textViewShouldStopOnMaxLength:)]) {
@@ -288,7 +291,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
 
     if (currentNumberOfLines > self.numberOfLines
         && self.heightConstraint.constant == maxHeight
-        && self.numberOfLines != -1) {
+        && self.numberOfLines != kNHTextViewDefaultNumberOfLines) {
         return;
     }
 
@@ -567,11 +570,11 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     if (CGRectIsNull(self.caretRect)) {
         CGRect resultCaretRect = [super caretRectForPosition:position];
 
-        if (self.caretSize.width != -1) {
+        if (self.caretSize.width != kNHTextViewDefaultCaretSize) {
             resultCaretRect.size.width = self.caretSize.width;
         }
 
-        if (self.caretSize.height != -1) {
+        if (self.caretSize.height != kNHTextViewDefaultCaretSize) {
             resultCaretRect.size.height = self.caretSize.height;
         }
         

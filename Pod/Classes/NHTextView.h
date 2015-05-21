@@ -12,6 +12,10 @@ extern NSString *const kNHTextViewLinkAttributesSetting;
 extern NSString *const kNHTextViewHashtagAttributesSetting;
 extern NSString *const kNHTextViewMentionAttributesSetting;
 
+extern const CGFloat kNHTextViewDefaultCaretSize;
+extern const NSInteger kNHTextViewDefaultTextLength;
+extern const NSInteger kNHTextViewDefaultNumberOfLines;
+
 @class NHTextView;
 
 @protocol NHTextViewDelegate <NSObject>
