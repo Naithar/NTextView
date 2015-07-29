@@ -12,6 +12,9 @@ extern NSString *const kNHTextViewLinkAttributesSetting;
 extern NSString *const kNHTextViewHashtagAttributesSetting;
 extern NSString *const kNHTextViewMentionAttributesSetting;
 
+extern NSString *const kNHTextViewMentionRegexpSetting;
+extern NSString *const kNHTextViewHashtagRegexpSetting;
+
 extern const CGFloat kNHTextViewDefaultCaretSize;
 extern const NSInteger kNHTextViewDefaultTextLength;
 extern const NSInteger kNHTextViewDefaultNumberOfLines;
@@ -54,6 +57,9 @@ extern const NSInteger kNHTextViewDefaultNumberOfLines;
 
 @property (nonatomic, assign) NSUInteger maxLenght;
 @property (nonatomic, assign) BOOL gotMaxLength;
+
+@property (nonatomic, copy) NSString *hashtagRegexp;
+@property (nonatomic, copy) NSString *mentionRegexp;
 
 + (NSMutableDictionary*)defaultSettings;
 

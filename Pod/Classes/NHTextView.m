@@ -17,6 +17,9 @@
 NSString *const kNHTextViewLinkAttributesSetting = @"NHTextViewLinkAttributes";
 NSString *const kNHTextViewHashtagAttributesSetting = @"NHTextViewHashtagAttributes";
 NSString *const kNHTextViewMentionAttributesSetting = @"NHTextViewMentionAttributes";
+NSString *const kNHTextViewMentionRegexpSetting = @"NHTextViewMentionRegexp";
+NSString *const kNHTextViewHashtagRegexpSetting = @"NHtextViewHashtagRegexp";
+
 const CGFloat kNHTextViewDefaultCaretSize = -1;
 const NSInteger kNHTextViewDefaultTextLength = -1;
 const NSInteger kNHTextViewDefaultNumberOfLines = -1;
@@ -170,6 +173,9 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     _hashtagAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewHashtagAttributesSetting], nil);
     _mentionAttributes = ifNSNull([NHTextView defaultSettings][kNHTextViewMentionAttributesSetting], nil);
 
+    _mentionRegexp = ifNSNull([NHTextView defaultSettings][kNHTextViewMentionRegexpSetting], nil);
+    _hashtagRegexp = ifNSNull([NHTextView defaultSettings][kNHTextViewHashtagRegexpSetting], nil);
+    
     [self checkForGrowing];
 }
 
@@ -416,7 +422,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     NSRange textRange = NSMakeRange(0, [string length]);
 
     NSRegularExpression *hashtagRegExp = [NSRegularExpression
-                                          regularExpressionWithPattern:kNHTextViewHashtagPattern
+                                          regularExpressionWithPattern:self.hashtagRegexp ?: kNHTextViewHashtagPattern
                                           options:0
                                           error:nil];
 
@@ -444,7 +450,7 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     NSRange textRange = NSMakeRange(0, [string length]);
 
     NSRegularExpression *mentionRegExp = [NSRegularExpression
-                                          regularExpressionWithPattern:kNHTextViewMentionPattern
+                                          regularExpressionWithPattern:self.mentionRegexp ?: kNHTextViewMentionPattern
                                           options:0
                                           error:nil];
 
