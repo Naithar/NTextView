@@ -471,12 +471,16 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     [super setContentInset:contentInset];
 
     if (![super respondsToSelector:@selector(textContainerInset)]) {
-        self.placeholderLabel.frame = CGRectMake(contentInset.left + 4.5,
-                                                 contentInset.top,
-                                                 (self.bounds.size.width
-                                                  - contentInset.left
-                                                  - contentInset.right),
-                                                 0);
+        
+        CGRect rect = CGRectMake(contentInset.left + 4.5,
+                                 contentInset.top,
+                                 MAX(0, (self.bounds.size.width
+                                         - contentInset.left
+                                         - contentInset.right)),
+                                 0);
+        
+        self.placeholderLabel.frame = rect;
+        
         [self.placeholderLabel sizeToFit];
         [self sendSubviewToBack:self.placeholderLabel];
 
@@ -488,12 +492,13 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     if ([super respondsToSelector:@selector(textContainerInset)]) {
         [super setTextContainerInset:textContainerInset];
 
-        self.placeholderLabel.frame = CGRectMake(textContainerInset.left + 4.5,
-                                                 textContainerInset.top,
-                                                 (self.bounds.size.width
-                                                  - textContainerInset.left
-                                                  - textContainerInset.right),
-                                                 0);
+        CGRect rect = CGRectMake(textContainerInset.left + 4.5,
+                                 textContainerInset.top,
+                                 MAX(0, (self.bounds.size.width
+                                  - textContainerInset.left
+                                  - textContainerInset.right)),
+                                 0);
+        self.placeholderLabel.frame = rect;
         [self.placeholderLabel sizeToFit];
         [self sendSubviewToBack:self.placeholderLabel];
 
