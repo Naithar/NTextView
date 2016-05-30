@@ -598,6 +598,26 @@ NSString *const kNHTextViewMentionPattern = @"(\\A|\\W)(@\\w+)";
     return self.caretRect;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    if ([super respondsToSelector:@selector(textContainerInset)]) {
+        self.placeholderLabel.frame = CGRectMake(self.textContainerInset.left + 4.5,
+                                                 self.textContainerInset.top,
+                                                 (self.bounds.size.width
+                                                  - self.textContainerInset.left
+                                                  - self.textContainerInset.right),
+                                                 0);
+        [self.placeholderLabel sizeToFit];
+        [self sendSubviewToBack:self.placeholderLabel];
+        
+        [self checkForGrowingAnimated:YES];
+    }
+    
+    [self layoutIfNeeded];
+
+}
+
 - (void)dealloc {
     self.nhTextViewDelegate = nil;
     self.delegate = nil;
